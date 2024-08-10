@@ -81,6 +81,19 @@
             <version>4.4.0</version>
         </dependency>
 
+        <!--zhixiang-interface-sdk-->
+        <dependency>
+            <groupId>com.wisewind</groupId>
+            <artifactId>zhixiang-client-sdk</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.16</version>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>

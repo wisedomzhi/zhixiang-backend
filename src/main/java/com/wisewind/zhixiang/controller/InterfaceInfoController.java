@@ -3,16 +3,15 @@ package com.wisewind.zhixiang.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wisewind.zhixiang.annotation.AuthCheck;
-import com.wisewind.zhixiang.common.BaseResponse;
-import com.wisewind.zhixiang.common.DeleteRequest;
-import com.wisewind.zhixiang.common.ErrorCode;
-import com.wisewind.zhixiang.common.ResultUtils;
+import com.wisewind.zhixiang.common.*;
 import com.wisewind.zhixiang.constant.CommonConstant;
 import com.wisewind.zhixiang.exception.BusinessException;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
+import com.wisewind.zhixiang.model.enums.InterfaceInfoStatusEnum;
 import com.wisewind.zhixiang.service.UserService;
+import com.wisewind.zhixiangclientsdk.client.ZhiXiangInterfaceClient;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +43,8 @@ public class InterfaceInfoController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private ZhiXiangInterfaceClient zhiXiangInterfaceClient;
     // region 增删改查
 
     /**
@@ -199,4 +200,75 @@ public class InterfaceInfoController {
 
     // endregion
 
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/activate")
+    public BaseResponse<Boolean> activateInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        // 判断接口是否能调通
+
+        com.wisewind.zhixiangclientsdk.model.User user = new com.wisewind.zhixiangclientsdk.model.User();
+        user.setName("test");
+        String callResult = zhiXiangInterfaceClient.postByJsonName(user);
+        if(StringUtils.isBlank(callResult)){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口访问失败");
+        }
+
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ACTIVATE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+
+    @AuthCheck(mustRole = "admin")
+    @PostMapping("/forbid")
+    public BaseResponse<Boolean> forbidInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                       HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.FORBIDDEN.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
+
+
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long id = idRequest.getId();
+        // 判断是否存在
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        if (oldInterfaceInfo == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.FORBIDDEN.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResultUtils.success(result);
+    }
 }
