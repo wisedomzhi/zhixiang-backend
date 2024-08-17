@@ -2,7 +2,7 @@ package com.wisewind.zhixiang.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wisewind.zhixiang.model.entity.User;
+import com.wisewind.zhixiangcommon.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 
@@ -21,7 +21,7 @@ public interface UserService extends IService<User> {
      * @param checkPassword 校验密码
      * @return 新用户 id
      */
-    long userRegister(String userAccount, String userPassword, String checkPassword);
+    long userRegister(String userName, String userAccount, String userPassword, String checkPassword);
 
     /**
      * 用户登录

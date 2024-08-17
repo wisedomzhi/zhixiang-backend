@@ -1,7 +1,7 @@
 package com.wisewind.zhixiang.service;
 
-import com.wisewind.zhixiang.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wisewind.zhixiangcommon.model.entity.InterfaceInfo;
 
 /**
 * @author ffz

@@ -81,6 +81,13 @@
             <version>4.4.0</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.wisewind</groupId>
+            <artifactId>zhixiang-common</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
         <!--zhixiang-interface-sdk-->
         <dependency>
             <groupId>com.wisewind</groupId>
@@ -92,6 +99,21 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.8.16</version>
+        </dependency>
+
+        <!--       RPC依赖-->
+        <!--Dubbo 3-->
+        <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo-spring-boot-starter -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <version>3.2.15</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.boot</groupId>
+            <artifactId>nacos-config-spring-boot-starter</artifactId>
+            <version>0.2.12</version>
         </dependency>
 
 

@@ -1,7 +1,7 @@
 package com.wisewind.zhixiang.mapper;
 
-import com.wisewind.zhixiang.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.wisewind.zhixiangcommon.model.entity.InterfaceInfo;
 
 /**
 * @author ffz

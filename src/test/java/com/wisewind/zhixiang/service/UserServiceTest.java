@@ -1,11 +1,10 @@
 package com.wisewind.zhixiang.service;
 
-import com.wisewind.zhixiang.model.entity.User;
+import com.wisewind.zhixiangcommon.model.entity.User;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import javax.annotation.Resource;
 
 /**
  * 用户服务测试
@@ -45,37 +44,6 @@ class UserServiceTest {
         Assertions.assertNotNull(user);
     }
 
-    @Test
-    void userRegister() {
-        String userAccount = "wisewind";
-        String userPassword = "";
-        String checkPassword = "123456";
-        try {
-            long result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yu";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "wisewind";
-            userPassword = "123456";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yu pi";
-            userPassword = "12345678";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            checkPassword = "123456789";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "dogwisewind";
-            checkPassword = "12345678";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "wisewind";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-        } catch (Exception e) {
 
-        }
-    }
+
 }

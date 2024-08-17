@@ -1,5 +1,9 @@
 package com.wisewind.zhixiang.controller;
 
+import cn.hutool.core.lang.Dict;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wisewind.zhixiang.annotation.AuthCheck;
@@ -9,16 +13,17 @@ import com.wisewind.zhixiang.exception.BusinessException;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoAddRequest;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.wisewind.zhixiang.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
+import com.wisewind.zhixiang.model.dto.interfaceinfo.InvokeInterfaceInfoRequest;
 import com.wisewind.zhixiang.model.enums.InterfaceInfoStatusEnum;
 import com.wisewind.zhixiang.service.UserService;
 import com.wisewind.zhixiangclientsdk.client.ZhiXiangInterfaceClient;
+import com.wisewind.zhixiangcommon.model.entity.InterfaceInfo;
+import com.wisewind.zhixiangcommon.model.entity.User;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wisewind.zhixiang.model.entity.InterfaceInfo;
-import com.wisewind.zhixiang.model.entity.User;
 import com.wisewind.zhixiang.service.InterfaceInfoService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 帖子接口
@@ -213,14 +219,12 @@ public class InterfaceInfoController {
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        // 判断接口是否能调通
+        // todo 判断接口是否能调通
 
-        com.wisewind.zhixiangclientsdk.model.User user = new com.wisewind.zhixiangclientsdk.model.User();
-        user.setName("test");
-        String callResult = zhiXiangInterfaceClient.postByJsonName(user);
-        if(StringUtils.isBlank(callResult)){
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口访问失败");
-        }
+//        String callResult = zhiXiangInterfaceClient.postByJsonName(user);
+//        if(StringUtils.isBlank(callResult)){
+//            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "接口访问失败");
+//        }
 
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setId(id);
@@ -253,22 +257,39 @@ public class InterfaceInfoController {
 
 
     @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody IdRequest idRequest,
+    public BaseResponse<String> invokeInterfaceInfo(@RequestBody InvokeInterfaceInfoRequest invokeInterfaceInfoRequest,
                                                      HttpServletRequest request) {
-        if (idRequest == null || idRequest.getId() <= 0) {
+        if (invokeInterfaceInfoRequest == null || invokeInterfaceInfoRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        long id = idRequest.getId();
+        long id = invokeInterfaceInfoRequest.getId();
         // 判断是否存在
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        String apiUrl = invokeInterfaceInfoRequest.getApiUrl();
+        if(StringUtils.isBlank(apiUrl)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.FORBIDDEN.getValue());
-        boolean result = interfaceInfoService.updateById(interfaceInfo);
-        return ResultUtils.success(result);
+        // todo 根据接口真实地址调用
+        User loginUser = userService.getLoginUser(request);
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+
+        InterfaceInfo interfaceInfo = interfaceInfoService.getById(invokeInterfaceInfoRequest.getId());
+        Integer reducePoint = interfaceInfo.getReducePoint();
+        Integer remainPoint = loginUser.getRemainPoint();
+        if(remainPoint < reducePoint){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "剩余点数不足");
+        }
+        ZhiXiangInterfaceClient userZhiXiangInterfaceClient = new ZhiXiangInterfaceClient(accessKey, secretKey);
+        String res = userZhiXiangInterfaceClient.request(apiUrl, invokeInterfaceInfoRequest.getRequestParams());
+
+        if(res == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "调用的接口不存在" );
+        }
+        return ResultUtils.success(res);
     }
 }

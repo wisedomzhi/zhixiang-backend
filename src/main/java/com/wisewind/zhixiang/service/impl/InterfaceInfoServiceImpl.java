@@ -1,15 +1,12 @@
 package com.wisewind.zhixiang.service.impl;
-import java.util.Date;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wisewind.zhixiang.common.ErrorCode;
 import com.wisewind.zhixiang.exception.BusinessException;
-import com.wisewind.zhixiang.model.entity.InterfaceInfo;
-import com.wisewind.zhixiang.model.enums.PostGenderEnum;
 import com.wisewind.zhixiang.model.enums.PostReviewStatusEnum;
 import com.wisewind.zhixiang.service.InterfaceInfoService;
 import com.wisewind.zhixiang.mapper.InterfaceInfoMapper;
-import org.apache.commons.lang3.ObjectUtils;
+import com.wisewind.zhixiangcommon.model.entity.InterfaceInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +34,7 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String method = interfaceInfo.getMethod();
                 // 创建时，所有参数必须非空
         if (add) {
-            if (StringUtils.isAnyBlank(apiName, apiDescription, apiUrl, requestHeader, responseHeader, method)) {
+            if (StringUtils.isAnyBlank(apiName, apiDescription, apiUrl, method)) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
             }
         }

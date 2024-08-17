@@ -9,9 +9,9 @@ import com.wisewind.zhixiang.common.ErrorCode;
 import com.wisewind.zhixiang.common.ResultUtils;
 import com.wisewind.zhixiang.exception.BusinessException;
 import com.wisewind.zhixiang.model.dto.user.*;
-import com.wisewind.zhixiang.model.entity.User;
 import com.wisewind.zhixiang.model.vo.UserVO;
 import com.wisewind.zhixiang.service.UserService;
+import com.wisewind.zhixiangcommon.model.entity.User;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -47,13 +47,14 @@ public class UserController {
         if (userRegisterRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        String userName = userRegisterRequest.getUserName();
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userName, userAccount, userPassword, checkPassword)) {
             return null;
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        long result = userService.userRegister(userName, userAccount, userPassword, checkPassword);
         return ResultUtils.success(result);
     }
 

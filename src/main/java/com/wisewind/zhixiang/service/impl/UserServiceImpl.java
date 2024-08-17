@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wisewind.zhixiang.common.ErrorCode;
 import com.wisewind.zhixiang.exception.BusinessException;
 import com.wisewind.zhixiang.mapper.UserMapper;
-import com.wisewind.zhixiang.model.entity.User;
 import com.wisewind.zhixiang.service.UserService;
+import com.wisewind.zhixiangcommon.model.entity.User;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +39,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      */
     private static final String SALT = "wisewind";
 
+    private static final String DEFAULT_AVATAR = "https://wisezhi-sky-takeout.oss-cn-beijing.aliyuncs.com/user.png";
+
+    private static final Integer GIFT_POINT = 100;
+
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userName, String userAccount, String userPassword, String checkPassword) {
         // 1. 校验
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
+        if (StringUtils.isAnyBlank(userName, userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
         }
         if (userAccount.length() < 4) {
@@ -69,12 +73,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             // 3. 分配accessKey和secretKey
             String accessKey = DigestUtil.md5Hex(userAccount+SALT+ RandomUtil.randomNumbers(5));
             String secretKey = DigestUtil.md5Hex(userAccount+SALT+ RandomUtil.randomNumbers(10));
+
             // 4. 插入数据
             User user = new User();
+            user.setUserName(userName);
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
             user.setAccessKey(accessKey);
             user.setSecretKey(secretKey);
+            // 设置默认头像
+            user.setUserAvatar(DEFAULT_AVATAR);
+            // 新用户赠送调用次数
+            user.setRemainPoint(GIFT_POINT);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");

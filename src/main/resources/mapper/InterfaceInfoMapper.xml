@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wisewind.zhixiang.mapper.InterfaceInfoMapper">
 
-    <resultMap id="BaseResultMap" type="com.wisewind.zhixiang.model.entity.InterfaceInfo">
+    <resultMap id="BaseResultMap" type="com.wisewind.zhixiangcommon.model.entity.InterfaceInfo">
         <id property="id" column="id" jdbcType="BIGINT"/>
         <result property="apiName" column="apiName" jdbcType="VARCHAR"/>
         <result property="apiDescription" column="apiDescription" jdbcType="VARCHAR"/>
@@ -15,6 +15,11 @@
         <result property="method" column="method" jdbcType="VARCHAR"/>
         <result property="requestParams" column="requestParams" jdbcType="VARCHAR"/>
         <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="totalInvokeCount" column="totalInvokeCount" jdbcType="INTEGER"/>
+        <result property="requestExample" column="requestExample" jdbcType="VARCHAR"/>
+        <result property="reducePoint" column="reducePoint" jdbcType="INTEGER"/>
+        <result property="returnFormat" column="returnFormat" jdbcType="VARCHAR"/>
+        <result property="avatarUrl" column="avatarUrl" jdbcType="VARCHAR"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
         <result property="isDeleted" column="isDeleted" jdbcType="TINYINT"/>
@@ -24,6 +29,7 @@
         id,apiName,apiDescription,
         apiUrl,requestHeader,responseHeader,
         status,method,userId,requestParams,
-        createTime,updateTime,isDeleted
+        totalInvokeCount,requestExample,reducePoint,
+        returnFormat,avatarUrl,createTime,updateTime,isDeleted
     </sql>
 </mapper>
